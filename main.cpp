@@ -20,11 +20,7 @@ int main(int argc, char *argv[])
     // 网络延时时间
     av_dict_set(&opts,"max_delay","500",0);
     AVFormatContext *ic = nullptr;
-    int ret = avformat_open_input(&ic,
-                        path,
-                        0,
-                        &opts);
-
+    int ret = avformat_open_input(&ic,path,0,&opts);
     if(ret!=0)
     {
         char buf[1024]={0};
@@ -34,6 +30,13 @@ int main(int argc, char *argv[])
         return -1;
     }
     std::cout<< "ok" <<std::endl;
+    ret = avformat_find_stream_info(ic,0);
+    // 获取视频流总时长
+    int total = ic->duration /(AV_TIME_BASE /1000);
+
+    std::cout<< total << "ms" <<std::endl;
+    // 打印视频流信息
+    av_dump_format(ic,0,"",0);
 
     if(ic)
     {
@@ -42,6 +45,8 @@ int main(int argc, char *argv[])
     }
     getchar();
     return 0;
+
+
     /*QApplication a(argc, argv);
     MainWindow mm;
     mm.show();

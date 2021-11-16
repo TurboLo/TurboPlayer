@@ -7,6 +7,7 @@ extern "C"
 }
 #pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg3.4.2/lib/win64/avformat.lib")
 #pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg3.4.2/lib/win64/avutil.lib")
+#pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg3.4.2/lib/win64/avcodec.lib")
 int main(int argc, char *argv[])
 {
     const char * path = "D:/BaiduNetdiskDownload/SQL Server 2014全套/1.SQL Server 2014简介.mp4";
@@ -64,7 +65,24 @@ int main(int argc, char *argv[])
     //获取视频流
     av_find_best_stream(ic,AVMEDIA_TYPE_VIDEO,-1,-1, nullptr,0);
 
+    AVPacket *pkt = av_packet_alloc();
+    while(true)
+    {
+        int re = av_read_frame(ic,pkt);
+        if(re!=0)
+        {
+            break;
+        }
+        std::cout<< "size=" << pkt->size <<std::endl;
+        // 显示时间
+        std::cout<< "pts=" << pkt->pts <<std::endl;
+        // 解码时间
+        std::cout<< "dts=" << pkt->dts <<std::endl;
 
+        // 释放，引用计数为-1时候释放控件
+        av_packet_unref(pkt);
+    }
+    av_packet_free(&pkt);
     if(ic)
     {
         avformat_close_input(&ic);

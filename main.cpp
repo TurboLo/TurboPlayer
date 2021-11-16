@@ -38,6 +38,33 @@ int main(int argc, char *argv[])
     // 打印视频流信息
     av_dump_format(ic,0,"",0);
 
+    for(int i =0;i<ic->nb_streams;i++)
+    {
+        AVStream  *as = ic->streams[i];
+        if(as->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
+        {
+            std::cout<< i << "声音" <<std::endl;
+            std::cout<< "sample_rate=" << as->codecpar->sample_rate <<std::endl;
+            std::cout<< "format=" << as->codecpar->format <<std::endl;
+            std::cout<< "channels=" << as->codecpar->channels <<std::endl;
+            std::cout<< "codec_id=" << as->codecpar->codec_id <<std::endl;
+            std::cout<< "frame_size=" << as->codecpar->frame_size <<std::endl;
+        }
+        else if(as->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
+        {
+            std::cout<< i << "视频" <<std::endl;
+            std::cout<< "width=" << as->codecpar->width <<std::endl;
+            std::cout<< "height=" << as->codecpar->height <<std::endl;
+            std::cout<< "num = " << as->avg_frame_rate.num << "  dem=" << as->avg_frame_rate.den <<std::endl;
+            std::cout<< "height" << as->codecpar->height <<std::endl;
+            std::cout<< "height" << as->codecpar->height <<std::endl;
+        }
+    }
+
+    //获取视频流
+    av_find_best_stream(ic,AVMEDIA_TYPE_VIDEO,-1,-1, nullptr,0);
+
+
     if(ic)
     {
         avformat_close_input(&ic);

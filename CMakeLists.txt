@@ -7,9 +7,9 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_CXX_STANDARD 14)
 
 set(QT_VERSION 5)
-set(REQUIRED_LIBS Core Gui Widgets PrintSupport Network Svg OpenGL MultimediaWidgets QuickWidgets Multimedia Quick Sql XmlPatterns Qml Network Xml WebEngine WebEngineWidgets)
+set(REQUIRED_LIBS Core Gui Widgets PrintSupport Network Svg OpenGL MultimediaWidgets QuickWidgets Multimedia Quick Sql XmlPatterns Qml Network Xml WebEngine WebEngineWidgets OpenGLExtensions)
 set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Gui Qt5::Widgets Qt5::PrintSupport Qt5::Network Qt5::Svg Qt5::OpenGL Qt5::MultimediaWidgets
-        Qt5::QuickWidgets Qt5::Multimedia Qt5::Quick Qt5::Sql Qt5::XmlPatterns Qt5::Qml Qt5::Network Qt5::Xml Qt5::WebEngine Qt5::WebEngineWidgets)
+        Qt5::QuickWidgets Qt5::Multimedia Qt5::Quick Qt5::Sql Qt5::XmlPatterns Qt5::Qml Qt5::Network Qt5::Xml Qt5::WebEngine Qt5::WebEngineWidgets Qt5::OpenGLExtensions)
 
 find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 

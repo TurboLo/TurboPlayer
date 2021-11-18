@@ -1,5 +1,8 @@
 #include <QApplication>
 #include <iostream>
+#include <QAudioFormat>
+#include <QThread>
+#include <QAudioOutput>
 #include "MainWindow.h"
 extern "C"
 {
@@ -11,7 +14,7 @@ extern "C"
 #pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg3.4.2/lib/win64/avcodec.lib")
 int main(int argc, char *argv[])
 {
-    const char * path = "D:/BaiduNetdiskDownload/SQL Server 2014全套/1.SQL Server 2014简介.mp4";
+    /*const char * path = "D:/BaiduNetdiskDownload/SQL Server 2014全套/1.SQL Server 2014简介.mp4";
     // 初始化封装库
     av_register_all();
     // 初始化网络库
@@ -171,10 +174,40 @@ int main(int argc, char *argv[])
     }
     getchar();
     return 0;
+*/
 
 
-    /*QApplication a(argc, argv);
+ /*   QAudioFormat fmt;
+    fmt.setSampleRate(44100);
+    fmt.setSampleSize(16);
+    fmt.setChannelCount(2);
+    fmt.setCodec("audio/pcm");
+    fmt.setByteOrder(QAudioFormat::LittleEndian);
+    fmt.setSampleType(QAudioFormat::UnSignedInt);
+
+    QAudioOutput *out = new QAudioOutput(fmt);
+    QIODevice *io = out->start();
+    int size = out->periodSize();
+    char *buf = new char[size];
+
+    FILE *fp = fopen("./out.pcm","rb");
+    while(!feof(fp))
+    {
+        if(out->bytesFree() < size)
+        {
+            QThread::msleep(1);
+            continue;
+        }
+        int len = fread(buf,1,size,fp);
+        if(len <= 0) break;
+        io->write(buf,len);
+    }
+    fclose(fp);
+    delete buf;
+    buf = nullptr;*/
+
+    QApplication a(argc, argv);
     MainWindow mm;
     mm.show();
-    return QApplication::exec();*/
+    return QApplication::exec();
 }

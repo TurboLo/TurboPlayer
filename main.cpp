@@ -117,8 +117,8 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-
     AVPacket *pkt = av_packet_alloc();
+    AVFrame *frame = av_frame_alloc();
     while(true)
     {
         int re = av_read_frame(ic,pkt);
@@ -131,12 +131,39 @@ int main(int argc, char *argv[])
         std::cout<< "pts=" << pkt->pts <<std::endl;
         // 解码时间
         std::cout<< "dts=" << pkt->dts <<std::endl;
+        AVCodecContext *cc;
+        if(pkt->stream_index == 0)
+        {
+            cc = vc;
+        }
+        if(pkt->stream_index == 1)
+        {
+            cc = ac;
+        }
 
+        re = avcodec_send_packet(cc,pkt);
         // 释放，引用计数为-1时候释放控件
         av_packet_unref(pkt);
+
+        if(re!=0)
+        {
+            continue;
+        }
+
+        while(true)
+        {
+            re = avcodec_receive_frame(cc,frame);
+            if(re != 0)
+            {
+                break;
+            }
+            std::cout << frame->format << "aas" << frame->linesize[0] << std::endl;
+        }
         break;
     }
+
     av_packet_free(&pkt);
+    av_frame_free(&frame);
     if(ic)
     {
         avformat_close_input(&ic);

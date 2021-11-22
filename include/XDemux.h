@@ -17,25 +17,28 @@
 
 #include <string>
 #include <mutex>
-
-extern "C"
-{
-#include "libavformat/avformat.h"
-#include "libavcodec/avcodec.h"
-#include "libswscale/swscale.h"
-#include "libswresample/swresample.h"
-}
-#pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg3.4.2/lib/win64/avformat.lib")
-#pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg3.4.2/lib/win64/avutil.lib")
-#pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg3.4.2/lib/win64/avcodec.lib")
-
+#include "FFMPegLib.h"
+struct AVFormatContext;
+struct AVPacket;
 class XDemux
 {
 public:
     XDemux();
     virtual ~XDemux();
 
-    virtual bool open(const std::string &url);
+    virtual bool open(const char *url);
+    // 空间需要调用者释放，释放对象为AVpacket对象空间和数据空间 av_packet_free
+    virtual AVPacket *read();
+
+    int totalMs = 0;
+private:
+    std::mutex mux;
+
+    AVFormatContext *m_ic{nullptr};
+
+    int videoStream = 0;
+    int audioStream = 1;
+    char *m_bTcp{};
 };
 
 

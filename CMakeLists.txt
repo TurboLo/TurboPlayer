@@ -14,10 +14,10 @@ set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Gui Qt5::Widgets Qt5::PrintSupport Qt
 find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
-include_directories(${PROJECT_SOURCE_DIR}/thirdParty/ffmpeg3.4.2/include)
-file(GLOB LIB_FFMPEG ${PROJECT_SOURCE_DIR}/thirdParty/ffmpeg3.4.2/lib/*.lib)
+include_directories(${PROJECT_SOURCE_DIR}/thirdParty/ffmpeg4.2.1/include)
+file(GLOB LIB_FFMPEG ${PROJECT_SOURCE_DIR}/thirdParty/ffmpeg4.2.1/lib/*.lib)
 
-link_directories(${PROJECT_SOURCE_DIR}/thirdParty/ffmpeg3.4.2/lib)
+link_directories(${PROJECT_SOURCE_DIR}/thirdParty/ffmpeg4.2.1/lib)
 
 aux_source_directory(${PROJECT_SOURCE_DIR}/src DIR_SRC)
 

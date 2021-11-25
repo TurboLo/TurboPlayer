@@ -11,3 +11,8 @@ MainWindow::~MainWindow()
 
 }
 
+void MainWindow::init(int w, int h)
+{
+    ui.openGLWidget->init(w,h);
+}
+

@@ -18,6 +18,7 @@
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 #include <QGLShaderProgram>
+#include <mutex>
 
 class XVideoWidget :public QOpenGLWidget ,protected QOpenGLFunctions
 {
@@ -25,6 +26,7 @@ class XVideoWidget :public QOpenGLWidget ,protected QOpenGLFunctions
 public:
     explicit XVideoWidget(QWidget *parent = nullptr);
     ~XVideoWidget() override;
+    void init(int width,int height);
 
 protected:
     // 刷新显示
@@ -46,6 +48,7 @@ private:
     int width = 240;
     int height = 128;
 
+    std::mutex mux;
 };
 
 

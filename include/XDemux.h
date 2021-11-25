@@ -20,6 +20,7 @@
 #include "FFMPegLib.h"
 struct AVFormatContext;
 struct AVPacket;
+struct AVCodecParameters;
 class XDemux
 {
 public:
@@ -30,7 +31,21 @@ public:
     // 空间需要调用者释放，释放对象为AVpacket对象空间和数据空间 av_packet_free
     virtual AVPacket *read();
 
+    virtual bool isAudio(AVPacket *pkt);
+    // 获取视频参数,返回空间需要清理
+    virtual AVCodecParameters  *copyVPara();
+    // 获取音频参数
+    virtual AVCodecParameters  *copyAPara();
+
+    virtual bool seek(double pos);
+
+    virtual void clear();
+
+    virtual void close();
+
     int totalMs = 0;
+    int width;
+    int height;
 private:
     std::mutex mux;
 

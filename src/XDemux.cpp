@@ -28,6 +28,7 @@ XDemux::~XDemux()
 
 bool XDemux::open(const char *url)
 {
+    close();
     //参数设置
     AVDictionary *opts = NULL;
     //设置rtsp流已tcp协议打开
@@ -66,13 +67,15 @@ bool XDemux::open(const char *url)
     //获取视频流
     videoStream = av_find_best_stream(m_ic, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
     AVStream *as = m_ic->streams[videoStream];
-
+    width = as->codecpar->width;
+    height = as->codecpar->height;
     std::cout << "=======================================================" << std::endl;
     std::cout << videoStream << "视频信息" << std::endl;
     std::cout << "codec_id = " << as->codecpar->codec_id << std::endl;
     std::cout << "format = " << as->codecpar->format << std::endl;
     std::cout << "width=" << as->codecpar->width << std::endl;
     std::cout << "height=" << as->codecpar->height << std::endl;
+
     //帧率 fps 分数转换
     std::cout << "video fps = " << r2d(as->avg_frame_rate) << std::endl;
     std::cout << "=======================================================" << std::endl;
@@ -89,8 +92,6 @@ bool XDemux::open(const char *url)
     std::cout << "frame_size = " << as->codecpar->frame_size << std::endl;
     //1024 * 2 * 2 = 4096  fps = sample_rate/frame_size
     mux.unlock();
-
-
     return true;
 }
 
@@ -116,4 +117,85 @@ AVPacket *XDemux::read()
 
     mux.unlock();
     return pkt;
+}
+
+AVCodecParameters *XDemux::copyVPara()
+{
+    mux.lock();
+    if(!m_ic)
+    {
+        mux.unlock();
+        return nullptr;
+    }
+    AVCodecParameters *pa = avcodec_parameters_alloc();
+    avcodec_parameters_copy(pa,m_ic->streams[videoStream]->codecpar);
+    mux.unlock();
+    return pa;
+}
+
+AVCodecParameters *XDemux::copyAPara()
+{
+    mux.lock();
+    if(!m_ic)
+    {
+        mux.unlock();
+        return nullptr;
+    }
+    AVCodecParameters *pa = avcodec_parameters_alloc();
+    avcodec_parameters_copy(pa,m_ic->streams[audioStream]->codecpar);
+    mux.unlock();
+    return pa;
+}
+
+bool XDemux::seek(double pos)
+{
+    mux.lock();
+    if(!m_ic)
+    {
+        mux.unlock();
+        return false;
+    }
+    avformat_flush(m_ic);
+    long long seekPos = 0;
+    seekPos = m_ic->streams[videoStream]->duration*pos;
+
+    int re = av_seek_frame(m_ic,videoStream,seekPos,AVSEEK_FLAG_BACKWARD|AVSEEK_FLAG_FRAME);
+    mux.unlock();
+    if(re < 0)
+    {
+        return false;
+    }
+    return true;
+}
+
+void XDemux::close()
+{
+    mux.lock();
+    if(!m_ic)
+    {
+        mux.unlock();
+        return;
+    }
+    avformat_close_input(&m_ic);
+    totalMs = 0;
+    mux.unlock();
+}
+
+void XDemux::clear()
+{
+    mux.lock();
+    if(!m_ic)
+    {
+        mux.unlock();
+        return;
+    }
+    avformat_flush(m_ic);
+    mux.unlock();
+}
+
+bool XDemux::isAudio(AVPacket *pkt)
+{
+    if(!pkt || pkt->size<=0 ||!pkt->data) return false;
+    if(pkt->stream_index == videoStream) return false;
+    return true;
 }

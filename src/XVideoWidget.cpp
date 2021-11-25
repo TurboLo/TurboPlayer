@@ -42,13 +42,14 @@ const char *tString = GET_STR(
 // ffmpeg -i file  -t 10 -s 240*128 -pix_fmt yuv420p out240X128.yuv
 void XVideoWidget::paintGL()
 {
-    if(feof(fp))
+    /*if(feof(fp))
     {
         fseek(fp,0,SEEK_SET);
     }
     fread(data[0],1,width*height,fp);
     fread(data[1],1,width*height/4,fp);
-    fread(data[2],1,width*height/4,fp);
+    fread(data[2],1,width*height/4,fp);*/
+    mux.lock();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D,texs[0]); // 绑定到材质
     glTexSubImage2D(GL_TEXTURE_2D,0,0,0,width,height,GL_RED,GL_UNSIGNED_BYTE,data[0]);
@@ -68,11 +69,12 @@ void XVideoWidget::paintGL()
     glUniform1i(unis[2],2);
 
     glDrawArrays(GL_TRIANGLE_STRIP,0,4);
-
+    mux.unlock();
 }
 
 void XVideoWidget::initializeGL()
 {
+    mux.lock();
     // 初始化opengl函数
     initializeOpenGLFunctions();
 
@@ -115,6 +117,52 @@ void XVideoWidget::initializeGL()
     unis[1] = program.uniformLocation("tex_u");
     unis[2] = program.uniformLocation("tex_v");
 
+    mux.unlock();
+    /*fp = fopen("./out240X128.yuv","rb");
+    if(!fp)
+    {
+        std::cout << "open file failed!" << std::endl;
+    }
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()),this,SLOT(update()));
+    timer->start(40);*/
+}
+
+void XVideoWidget::resizeGL(int w, int h)
+{
+    mux.lock();
+
+    mux.unlock();
+}
+
+XVideoWidget::XVideoWidget(QWidget *parent)
+: QOpenGLWidget(parent)
+{
+
+}
+
+XVideoWidget::~XVideoWidget()
+{
+
+}
+
+void XVideoWidget::init(int width, int height)
+{
+    mux.lock();
+    this->width = width;
+    this->height = height;
+    delete data[0];
+    delete data[1];
+    delete data[2];
+    // 分配材质内存空间
+    data[0] = new unsigned char[width * height];
+    data[1] = new unsigned char[width * height/4];
+    data[2] = new unsigned char[width * height/4];
+
+    if(texs[0])
+    {
+        glDeleteTextures(3,texs);
+    }
     // 创建材质
     glGenTextures(3,texs);
     // Y
@@ -139,33 +187,5 @@ void XVideoWidget::initializeGL()
     //创建材质显卡空间
     glTexImage2D(GL_TEXTURE_2D,0,GL_RED,width/2,height/2,0,GL_RED,GL_UNSIGNED_BYTE,0);
 
-    // 分配材质内存空间
-    data[0] = new unsigned char[width * height];
-    data[1] = new unsigned char[width * height/4];
-    data[2] = new unsigned char[width * height/4];
-
-    fp = fopen("./out240X128.yuv","rb");
-    if(!fp)
-    {
-        std::cout << "open file failed!" << std::endl;
-    }
-    QTimer *timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()),this,SLOT(update()));
-    timer->start(40);
-}
-
-void XVideoWidget::resizeGL(int w, int h)
-{
-
-}
-
-XVideoWidget::XVideoWidget(QWidget *parent)
-: QOpenGLWidget(parent)
-{
-
-}
-
-XVideoWidget::~XVideoWidget()
-{
-
+    mux.unlock();
 }

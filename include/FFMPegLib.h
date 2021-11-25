@@ -9,10 +9,10 @@ extern "C"
 #include "libswresample/swresample.h"
 }
 
-#pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg3.4.2/lib/win64/avformat.lib")
-#pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg3.4.2/lib/win64/avutil.lib")
-#pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg3.4.2/lib/win64/avcodec.lib")
-#pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg3.4.2/lib/win64/swscale.lib")
-#pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg3.4.2/lib/win64/swresample.lib")
+#pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg4.2.1/lib/win64/avformat.lib")
+#pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg4.2.1/lib/win64/avutil.lib")
+#pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg4.2.1/lib/win64/avcodec.lib")
+#pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg4.2.1/lib/win64/swscale.lib")
+#pragma comment(lib,"E:/FFMPEGTest/TurboPlayer/thirdParty/ffmpeg4.2.1/lib/win64/swresample.lib")
 
 #endif //FFMPEGTEST_FFMPEGLIB_H

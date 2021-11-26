@@ -19,14 +19,17 @@
 #include <QOpenGLFunctions>
 #include <QGLShaderProgram>
 #include <mutex>
+#include "FFMPegLib.h"
+#include "IVideoCall.h"
 
-class XVideoWidget :public QOpenGLWidget ,protected QOpenGLFunctions
+class XVideoWidget :public QOpenGLWidget ,protected QOpenGLFunctions,public IVideoCall
 {
     Q_OBJECT
 public:
     explicit XVideoWidget(QWidget *parent = nullptr);
     ~XVideoWidget() override;
-    void init(int width,int height);
+    void init(int width,int height) override;
+    void repaint(AVFrame *frame) override;
 
 protected:
     // 刷新显示

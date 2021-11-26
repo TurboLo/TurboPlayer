@@ -16,3 +16,8 @@ void MainWindow::init(int w, int h)
     ui.openGLWidget->init(w,h);
 }
 
+void MainWindow::repaint(AVFrame *frame)
+{
+    ui.openGLWidget->repaint(frame);
+}
+

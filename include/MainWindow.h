@@ -17,9 +17,10 @@ public:
 
     ~MainWindow() override;
     void init(int w,int h);
-
-private:
+    void repaint(AVFrame *frame);
     Ui::MainWindow ui;
+private:
+
 };
 
 

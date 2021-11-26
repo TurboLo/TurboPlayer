@@ -189,3 +189,24 @@ void XVideoWidget::init(int width, int height)
 
     mux.unlock();
 }
+
+void XVideoWidget::repaint(AVFrame *frame)
+{
+    if(!frame) return;
+    // 行对齐问题
+    mux.lock();
+    // 容错，保证尺寸正确
+    if(width * height ==0 || frame->width != width || frame->height != height)
+    {
+        av_frame_free(&frame);
+        mux.unlock();
+        return;
+    }
+
+    memcpy(data[0],frame->data[0],width*height);
+    memcpy(data[1],frame->data[1],width*height/4);
+    memcpy(data[2],frame->data[2],width*height/4);
+    mux.unlock();
+    av_frame_free(&frame);
+    update();
+}

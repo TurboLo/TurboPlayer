@@ -9,7 +9,8 @@ int main(int argc, char *argv[])
     MainWindow mm;
     mm.show();
     XDemuxThread xx;
-    xx.open("./test.mp4",mm.ui.openGLWidget);
+    // http://39.134.65.162/PLTV/88888888/224/3221225611/index.m3u8
+    xx.open("",mm.ui.openGLWidget);
     xx.start();
     return QApplication::exec();
 }

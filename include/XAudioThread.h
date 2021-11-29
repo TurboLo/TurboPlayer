@@ -19,27 +19,23 @@
 #include "XDecode.h"
 #include "XAudioPlay.h"
 #include "XResample.h"
+#include "XDecodeThread.h"
 
-struct AVCodecParameters;
-struct AVPacket;
-class XAudioThread :public QThread
+class XAudioThread :public XDecodeThread
 {
 public:
+    long long pts = 0;
     virtual bool open(AVCodecParameters *para);
-    virtual void push(AVPacket *pkt);
-    void run();
+    virtual void close();
+    void run() override;
     XAudioThread();
     virtual ~XAudioThread();
-
-    bool isExit = false;
-    int maxList = 100;
 protected:
 
 private:
-    std::list<AVPacket *> packet;
-    std::mutex mux;
-    XDecode *m_decode{nullptr};
+    std::mutex aMux;
     XResample *m_resample{nullptr};
+
 };
 
 

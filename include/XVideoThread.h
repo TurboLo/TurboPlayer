@@ -15,29 +15,25 @@
 
 #ifndef FFMPEGTEST_XVIDEOTHREAD_H
 #define FFMPEGTEST_XVIDEOTHREAD_H
-#include <QThread>
+
 #include "XDecode.h"
 #include "IVideoCall.h"
+#include "XDecodeThread.h"
 
 struct AVCodecParameters;
 struct AVPacket;
-class XVideoThread :public QThread
+class XVideoThread :public XDecodeThread
 {
 public:
     virtual bool open(AVCodecParameters *para,IVideoCall *call,int width ,int height);
-    virtual void push(AVPacket *pkt);
     void run() override;
-
     XVideoThread();
     virtual ~XVideoThread();
-    bool isExit = false;
-    int maxList = 100;
+    long long synPts = 0;
 protected:
 
 private:
-    std::list<AVPacket *> packet;
-    std::mutex mux;
-    XDecode *m_decode{nullptr};
+    std::mutex vMux;
     IVideoCall *m_call{nullptr};
 };
 

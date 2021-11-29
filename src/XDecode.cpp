@@ -24,10 +24,10 @@ bool XDecode::open(AVCodecParameters *para)
     if(!vCodec)
     {
         avcodec_parameters_free(&para);
-        std::cout << "cant find codec id" << para->codec_id << std::endl;
+        //std::cout << "cant find codec id" << para->codec_id << std::endl;
         return false;
     }
-    std::cout << "find avcodec " << para->codec_id << std::endl;
+    //std::cout << "find avcodec " << para->codec_id << std::endl;
     mux.lock();
     m_codec = avcodec_alloc_context3(vCodec);
     avcodec_parameters_to_context(m_codec,para);
@@ -40,11 +40,11 @@ bool XDecode::open(AVCodecParameters *para)
         mux.unlock();
         char buf[1024] = {0};
         av_strerror(re,buf,sizeof(buf)-1);
-        std::cout << "open error " << buf << std::endl;
+        //std::cout << "open error " << buf << std::endl;
         return false;
     }
     mux.unlock();
-    std::cout << "open finished " << std::endl;
+    //std::cout << "open finished " << std::endl;
     return true;
 }
 
@@ -56,6 +56,7 @@ void XDecode::close()
         avcodec_close(m_codec);
         avcodec_free_context(&m_codec);
     }
+    pts = 0;
     mux.unlock();
 }
 
@@ -106,6 +107,6 @@ AVFrame *XDecode::receive()
         av_frame_free(&frame);
         return nullptr;
     }
-    std::cout << frame->linesize[0] << " " << std::flush;
+    pts = frame->pts;
     return frame;
 }

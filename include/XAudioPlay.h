@@ -27,6 +27,7 @@ public:
     virtual void close() = 0;
     virtual bool write(const unsigned char *data , int dataSize) = 0;
     virtual int getFree() = 0;
+    virtual long long getNoPlayMs() = 0;
     virtual ~XAudioPlay();
 protected:
     XAudioPlay();

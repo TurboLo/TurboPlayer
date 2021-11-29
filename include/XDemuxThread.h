@@ -26,10 +26,14 @@ class XDemuxThread : public QThread
 public:
     virtual bool open(const char *url,IVideoCall *call);
     virtual void start();
+    virtual void close();
     void run() override;
     XDemuxThread();
     virtual ~XDemuxThread() override;
     bool isExit = false;
+    long long m_pts = 0;
+    long long totalMs = 0;
+
 protected:
 
 private:

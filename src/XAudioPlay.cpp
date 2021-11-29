@@ -70,6 +70,28 @@ public:
         mux.unlock();
         return true;
     }
+    virtual long long getNoPlayMs()
+    {
+        mux.lock();
+        if(!m_output)
+        {
+            mux.unlock();
+            return 0;
+        }
+        long long pts = 0;
+        double size = m_output->bufferSize() - m_output->bytesFree();
+        double secSize = m_sampleRate*(m_sampleSize/8)*m_channels;
+        if(secSize <= 0)
+        {
+            pts = 0;
+        }
+        else
+        {
+            pts = (size/secSize) *1000;
+        }
+        mux.unlock();
+        return pts;
+    }
 };
 
 

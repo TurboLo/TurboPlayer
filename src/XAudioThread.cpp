@@ -4,29 +4,22 @@
 
 XAudioThread::XAudioThread()
 {
-
+    m_resample = new XResample();
 }
 
 XAudioThread::~XAudioThread()
 {
-    isExit = true;
-    wait();
+
 }
 
 bool XAudioThread::open(AVCodecParameters *para)
 {
     if(!para) return false;
-    mux.lock();
-    if(!m_decode)
-    {
-        m_decode = new XDecode();
-    }
-    if(!m_resample)
-    {
-        m_resample = new XResample();
-    }
+    clear();
+    aMux.lock();
+    pts = 0;
     bool re = true;
-    if(m_resample->open(para,false))
+    if(!m_resample->open(para,false))
     {
         re = false;
     }
@@ -43,29 +36,21 @@ bool XAudioThread::open(AVCodecParameters *para)
 
     }
     std::cout << "xaudio open success" << std::endl;
-    mux.unlock();
+    aMux.unlock();
     return re;
 }
 
 void XAudioThread::run()
 {
-    unsigned char * pcm = new unsigned char[1024*1024];
+    auto * pcm = new unsigned char[1024*1024];
     while(!isExit)
     {
-        mux.lock();
-        if(packet.empty() || !m_decode || !m_resample)
-        {
-            mux.unlock();
-            msleep(1);
-            continue;
-        }
-        AVPacket *pkt = packet.front();
-        packet.pop_front();
-
+        aMux.lock();
+        AVPacket *pkt = pop();
         int re = m_decode->send(pkt);
         if(!re)
         {
-            mux.unlock();
+            aMux.unlock();
             msleep(1);
             continue;
         }
@@ -73,6 +58,7 @@ void XAudioThread::run()
         {
             AVFrame *frame = m_decode->receive();
             if(!frame) break;
+            pts = m_decode->pts - XAudioPlay::instance().getNoPlayMs();
             int size = m_resample->resample(frame,pcm);
             while(!isExit)
             {
@@ -90,26 +76,20 @@ void XAudioThread::run()
             }
         }
 
-        mux.unlock();
+        aMux.unlock();
     }
     delete pcm;
 }
 
-void XAudioThread::push(AVPacket *pkt)
+void XAudioThread::close()
 {
-    if(!pkt) return;
-
-    while(!isExit)
+    XDecodeThread::close();
+    if(m_resample)
     {
-        mux.lock();
-        if(packet.size() < maxList)
-        {
-
-            packet.push_back(pkt);
-            mux.unlock();
-            break;
-        }
-        mux.unlock();
-        msleep(1);
+        m_resample->close();
+        aMux.lock();
+        delete m_resample;
+        m_resample = nullptr;
+        aMux.unlock();
     }
 }

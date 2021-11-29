@@ -28,15 +28,13 @@ XDemux::~XDemux()
 
 bool XDemux::open(const char *url)
 {
-    //close();
+    close();
     //参数设置
     AVDictionary *opts = NULL;
     //设置rtsp流已tcp协议打开
     av_dict_set(&opts, "rtsp_transport",  "tcp", 0);
-
     //网络延时时间
     av_dict_set(&opts, "max_delay", "3000", 0);
-
     mux.lock();
     int re = avformat_open_input(
             &m_ic,
@@ -49,17 +47,17 @@ bool XDemux::open(const char *url)
         mux.unlock();
         char buf[1024] = { 0 };
         av_strerror(re, buf, sizeof(buf) - 1);
-        std::cout << "open " << url << " failed! :" << buf << std::endl;
+        //std::cout << "open " << url << " failed! :" << buf << std::endl;
         return false;
     }
-    std::cout << "open " << url << " success! " << std::endl;
+    //std::cout << "open " << url << " success! " << std::endl;
 
     //获取流信息
     re = avformat_find_stream_info(m_ic, 0);
 
     //总时长 毫秒
-    int totalMs = m_ic->duration / (AV_TIME_BASE / 1000);
-    std::cout << "totalMs = " << totalMs << std::endl;
+    totalMs = m_ic->duration / (AV_TIME_BASE / 1000);
+    //std::cout << "totalMs = " << totalMs << std::endl;
 
     //打印视频流详细信息
     av_dump_format(m_ic, 0, url, 0);
@@ -71,30 +69,30 @@ bool XDemux::open(const char *url)
     height = as->codecpar->height;
 
 
-    std::cout << "=======================================================" << std::endl;
+    /*std::cout << "=======================================================" << std::endl;
     std::cout << videoStream << "视频信息" << std::endl;
     std::cout << "codec_id = " << as->codecpar->codec_id << std::endl;
     std::cout << "format = " << as->codecpar->format << std::endl;
     std::cout << "width=" << as->codecpar->width << std::endl;
-    std::cout << "height=" << as->codecpar->height << std::endl;
+    std::cout << "height=" << as->codecpar->height << std::endl;*/
 
     //帧率 fps 分数转换
-    std::cout << "video fps = " << r2d(as->avg_frame_rate) << std::endl;
+    /*std::cout << "video fps = " << r2d(as->avg_frame_rate) << std::endl;
     std::cout << "=======================================================" << std::endl;
-    std::cout << audioStream << "音频信息" << std::endl;
+    std::cout << audioStream << "音频信息" << std::endl;*/
     //获取音频流
     audioStream = av_find_best_stream(m_ic, AVMEDIA_TYPE_AUDIO, -1, -1, NULL, 0);
     as = m_ic->streams[audioStream];
     m_channels = as->codecpar->channels;
     m_sampleRate = as->codecpar->sample_rate;
     m_sampleSize = as->codecpar->format * as->codecpar->channels;
-    std::cout << "codec_id = " << as->codecpar->codec_id << std::endl;
+    /*std::cout << "codec_id = " << as->codecpar->codec_id << std::endl;
     std::cout << "format = " << as->codecpar->format << std::endl;
     std::cout << "sample_rate = " << as->codecpar->sample_rate << std::endl;
     //AVSampleFormat;
     std::cout << "channels = " << as->codecpar->channels << std::endl;
     //一帧数据？？ 单通道样本数
-    std::cout << "frame_size = " << as->codecpar->frame_size << std::endl;
+    std::cout << "frame_size = " << as->codecpar->frame_size << std::endl;*/
 
     //1024 * 2 * 2 = 4096  fps = sample_rate/frame_size
     mux.unlock();

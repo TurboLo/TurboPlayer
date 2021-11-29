@@ -9,67 +9,45 @@ XVideoThread::XVideoThread()
 
 XVideoThread::~XVideoThread()
 {
-    isExit = true;
-    wait();
+
 }
 
 bool XVideoThread::open(AVCodecParameters *para,IVideoCall *call,int width ,int height)
 {
     if(!para) return false;
+    clear();
+    vMux.lock();
     m_call = call;
-    m_call->init(width,height);
-    mux.lock();
-    if(!m_decode)
+    if(m_call)
     {
-        m_decode = new XDecode();
+        m_call->init(width,height);
     }
+    synPts = 0;
+    vMux.unlock();
     bool re = true;
     if(!m_decode->open(para))
     {
         re = false;
     }
-    std::cout << "xvideo open success" << std::endl;
-    mux.unlock();
     return re;
-}
-
-void XVideoThread::push(AVPacket *pkt)
-{
-    if(!pkt) return;
-
-    while(!isExit)
-    {
-        mux.lock();
-        if(packet.size() < maxList)
-        {
-
-            packet.push_back(pkt);
-            mux.unlock();
-            break;
-        }
-        mux.unlock();
-        msleep(1);
-    }
 }
 
 void XVideoThread::run()
 {
     while(!isExit)
     {
-        mux.lock();
-        if(packet.empty() || !m_decode )
+        vMux.lock();
+        if(synPts > 0 && synPts < m_decode->pts)
         {
-            mux.unlock();
+            vMux.unlock();
             msleep(1);
             continue;
         }
-        AVPacket *pkt = packet.front();
-        packet.pop_front();
-
+        AVPacket *pkt = pop();
         int re = m_decode->send(pkt);
         if(!re)
         {
-            mux.unlock();
+            vMux.unlock();
             msleep(1);
             continue;
         }
@@ -82,6 +60,6 @@ void XVideoThread::run()
                 m_call->repaint(frame);
             }
         }
-        mux.unlock();
+        vMux.unlock();
     }
 }

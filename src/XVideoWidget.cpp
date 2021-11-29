@@ -202,10 +202,25 @@ void XVideoWidget::repaint(AVFrame *frame)
         mux.unlock();
         return;
     }
-
-    memcpy(data[0],frame->data[0],width*height);
-    memcpy(data[1],frame->data[1],width*height/4);
-    memcpy(data[2],frame->data[2],width*height/4);
+    if(width = frame->linesize[0])
+    {
+        memcpy(data[0],frame->data[0],width*height);
+        memcpy(data[1],frame->data[1],width*height/4);
+        memcpy(data[2],frame->data[2],width*height/4);
+    }
+    else
+    {
+        for(int i = 0;i<height;i++)
+        {
+            memcpy(data[0]+width*i,frame->data[0]+frame->linesize[0]*i,width);
+        }for(int i = 0;i<height/2;i++)
+        {
+            memcpy(data[1]+width/2*i,frame->data[1]+frame->linesize[0]*i,width);
+        }for(int i = 0;i<height/2;i++)
+        {
+            memcpy(data[2]+width/2*i,frame->data[2]+frame->linesize[0]*i,width);
+        }
+    }
     mux.unlock();
     av_frame_free(&frame);
     update();

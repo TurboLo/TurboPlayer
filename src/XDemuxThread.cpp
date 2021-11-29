@@ -9,8 +9,7 @@ XDemuxThread::XDemuxThread()
 
 XDemuxThread::~XDemuxThread()
 {
-    isExit = true;
-    wait();
+
 }
 
 bool XDemuxThread::open(const char *url, IVideoCall *call)
@@ -20,10 +19,6 @@ bool XDemuxThread::open(const char *url, IVideoCall *call)
         return false;
     }
     mux.lock();
-    if(!m_demux) m_demux = new XDemux();
-    if(!m_vt) m_vt = new XVideoThread();
-    if(!m_at) m_at = new XAudioThread();
-
     bool re = m_demux->open(url);
     if(!re)
     {
@@ -40,6 +35,7 @@ bool XDemuxThread::open(const char *url, IVideoCall *call)
         std::cout << "m_at->open failed" <<std::endl;
         re = false;
     }
+    totalMs = m_demux->totalMs;
     mux.unlock();
     std::cout << "open :" << re <<std::endl;
     return re;
@@ -48,6 +44,9 @@ bool XDemuxThread::open(const char *url, IVideoCall *call)
 void XDemuxThread::start()
 {
     mux.lock();
+    if(!m_demux) m_demux = new XDemux();
+    if(!m_vt) m_vt = new XVideoThread();
+    if(!m_at) m_at = new XAudioThread();
     QThread::start();
     if(m_vt) m_vt->start();
     if(m_at) m_at->start();
@@ -64,6 +63,12 @@ void XDemuxThread::run()
             mux.unlock();
             msleep(5);
             continue;
+        }
+
+        if(m_vt && m_at)
+        {
+            m_pts = m_at->pts;
+            m_vt->synPts = m_at->pts;
         }
         AVPacket *pkt = m_demux->read();
         if(!pkt)
@@ -88,5 +93,20 @@ void XDemuxThread::run()
             }
         }
         mux.unlock();
+        msleep(1);
     }
+}
+
+void XDemuxThread::close()
+{
+    isExit = true;
+    wait();
+    if(m_vt) m_vt->close();
+    if(m_at) m_at->close();
+    mux.lock();
+    delete m_vt;
+    delete m_at;
+    m_vt = nullptr;
+    m_at = nullptr;
+    mux.unlock();
 }

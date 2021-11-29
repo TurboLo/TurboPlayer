@@ -28,6 +28,7 @@ struct AVCodecContext;
 class XDecode
 {
 public:
+    long long pts = 0;
     bool isAudio = false;
     // 打开解码器,并且释放解码器
     virtual bool open(AVCodecParameters *para);

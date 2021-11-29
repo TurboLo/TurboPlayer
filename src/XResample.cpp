@@ -63,9 +63,8 @@ int XResample::resample(AVFrame *inDate, unsigned char *d)
             ,inDate->nb_samples
             ,(const uint8_t **)inDate->data
             ,inDate->nb_samples);
-
-    std::cout << "swr_convert = " <<re << std::endl;
-    if(re <=0 ) return re;
     int outSide =  re * inDate->channels * av_get_bytes_per_sample((AVSampleFormat)outFormat);
+    av_frame_free(&inDate);
+    if(re <=0 ) return re;
     return outSide;
 }

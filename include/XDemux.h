@@ -47,7 +47,7 @@ public:
     int m_sampleRate = 0;
     int m_sampleSize = 0;
     int m_channels = 0;
-    int totalMs = 0;
+    long long totalMs = 0;
     int width;
     int height;
 private:

@@ -27,7 +27,7 @@ protected:
 
 private slots:
     void openFile();
-    void pause();
+    void playOrPause();
 
 private:
     Ui::MainWindow ui;

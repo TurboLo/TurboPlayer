@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_xdt = new XDemuxThread();
     m_xdt->start();
     connect(ui.actionOpen,&QAction::triggered,this,&MainWindow::openFile);
-    connect(ui.actionPause,&QAction::triggered,this,&MainWindow::pause);
+    connect(ui.actionPause,&QAction::triggered,this,&MainWindow::playOrPause);
     startTimer(40);
 }
 
@@ -34,9 +34,16 @@ void MainWindow::repaint(AVFrame *frame)
     ui.openGLWidget->repaint(frame);
 }
 
-void MainWindow::pause()
+void MainWindow::playOrPause()
 {
-
+    if(m_xdt->m_isPause)
+    {
+        m_xdt->m_isPause = false;
+    }
+    else
+    {
+        m_xdt->m_isPause = true;
+    }
 }
 
 void MainWindow::openFile()
@@ -52,6 +59,7 @@ void MainWindow::openFile()
         QMessageBox::warning(this,"error","open failed");
         return;
     }
+
 }
 
 void MainWindow::timerEvent(QTimerEvent *e)

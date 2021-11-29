@@ -46,6 +46,12 @@ void XAudioThread::run()
     while(!isExit)
     {
         aMux.lock();
+        if(m_isPause)
+        {
+            aMux.unlock();
+            msleep(5);
+            continue;
+        }
         AVPacket *pkt = pop();
         int re = m_decode->send(pkt);
         if(!re)
@@ -66,7 +72,7 @@ void XAudioThread::run()
                 {
                     break;
                 }
-                if(XAudioPlay::instance().getFree() < size)
+                if(XAudioPlay::instance().getFree() < size || m_isPause)
                 {
                     msleep(1);
                     continue;
@@ -92,4 +98,10 @@ void XAudioThread::close()
         m_resample = nullptr;
         aMux.unlock();
     }
+}
+
+void XAudioThread::setPause(bool pause)
+{
+    m_isPause = pause;
+    XAudioPlay::instance().setPause(pause);
 }

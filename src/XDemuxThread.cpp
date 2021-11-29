@@ -57,6 +57,11 @@ void XDemuxThread::run()
 {
     while(!isExit)
     {
+        if(m_isPause)
+        {
+            msleep(5);
+            continue;
+        }
         mux.lock();
         if(!m_demux)
         {
@@ -108,5 +113,14 @@ void XDemuxThread::close()
     delete m_at;
     m_vt = nullptr;
     m_at = nullptr;
+    mux.unlock();
+}
+
+void XDemuxThread::setPause(bool pause)
+{
+    mux.lock();
+    m_isPause = pause;
+    if(m_at) m_at->setPause(pause);
+    if(m_vt) m_vt->setPause(pause);
     mux.unlock();
 }

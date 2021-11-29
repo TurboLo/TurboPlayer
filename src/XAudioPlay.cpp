@@ -92,6 +92,24 @@ public:
         mux.unlock();
         return pts;
     }
+    virtual void setPause(bool pause)
+    {
+        mux.lock();
+        if(!m_output)
+        {
+            mux.unlock();
+            return;
+        }
+        if(pause)
+        {
+            m_output->suspend();
+        }
+        else
+        {
+            m_output->resume();
+        }
+        mux.unlock();
+    }
 };
 
 

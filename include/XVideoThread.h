@@ -30,11 +30,13 @@ public:
     XVideoThread();
     virtual ~XVideoThread();
     long long synPts = 0;
+    void setPause(bool pause);
 protected:
 
 private:
     std::mutex vMux;
     IVideoCall *m_call{nullptr};
+    bool m_isPause = false;
 };
 
 

@@ -27,6 +27,7 @@ public:
     virtual bool open(const char *url,IVideoCall *call);
     virtual void start();
     virtual void close();
+    virtual void setPause(bool pause);
     void run() override;
     XDemuxThread();
     virtual ~XDemuxThread() override;
@@ -34,6 +35,7 @@ public:
     long long m_pts = 0;
     long long totalMs = 0;
 
+    bool m_isPause = false;
 protected:
 
 private:

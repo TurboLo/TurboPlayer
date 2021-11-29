@@ -30,11 +30,14 @@ public:
     void run() override;
     XAudioThread();
     virtual ~XAudioThread();
+    void setPause(bool pause);
+
 protected:
 
 private:
     std::mutex aMux;
     XResample *m_resample{nullptr};
+    bool m_isPause;
 
 };
 

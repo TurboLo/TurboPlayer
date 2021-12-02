@@ -31,12 +31,12 @@ public:
     virtual void close();
     XDecodeThread();
     virtual ~XDecodeThread();
-    XDecode *m_decode{nullptr};
 protected:
     std::list<AVPacket *> packet;
     std::mutex mux;
     bool isExit = false;
     int maxList = 100;
+    XDecode *m_decode{nullptr};
 private:
 };
 

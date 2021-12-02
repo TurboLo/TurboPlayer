@@ -141,25 +141,13 @@ void XDemuxThread::seek(double pos)
     long long seekPos = pos*m_demux->totalMs;
     while(!isExit)
     {
-        AVPacket *pkt = m_demux->read();
-        if(!pkt) continue;
-        if(pkt->stream_index == m_demux->audioStream)
+        AVPacket *pkt = m_demux->readVideo();
+        if(!pkt) break;
+        if(m_vt->repaintPts(pkt,seekPos))
         {
-            av_packet_free(&pkt);
-            continue;
-        }
-        bool re = m_vt->m_decode->send(pkt);
-        if(!re) break;
-        AVFrame *frame = m_vt->m_decode->receive();
-        if(!frame) continue;
-        // 到达位置
-        if(frame->pts >=seekPos)
-        {
-            m_pts = frame->pts;
-            m_vt->m_call->repaint(frame);
+            m_pts = seekPos;
             break;
         }
-        av_frame_free(&frame);
     }
     mux.unlock();
     setPause(status);

@@ -25,18 +25,19 @@ struct AVPacket;
 class XVideoThread :public XDecodeThread
 {
 public:
+    // 解码pts,如果接受到的数据pts>=seekPts 返回真，且显示画面
+    virtual bool repaintPts(AVPacket *pkt,long long seekPts);
     virtual bool open(AVCodecParameters *para,IVideoCall *call,int width ,int height);
     void run() override;
     XVideoThread();
     virtual ~XVideoThread();
     long long synPts = 0;
     void setPause(bool pause);
-    IVideoCall *m_call{nullptr};
 protected:
 
 private:
     std::mutex vMux;
-
+    IVideoCall *m_call{nullptr};
     bool m_isPause = false;
 };
 

@@ -76,3 +76,33 @@ void XVideoThread::setPause(bool pause)
     m_isPause = pause;
     vMux.unlock();
 }
+
+bool XVideoThread::repaintPts(AVPacket *pkt, long long int seekPts)
+{
+    vMux.lock();
+    bool re = m_decode->send(pkt);
+    if(!re)
+    {
+        vMux.unlock();
+        return true;
+    }
+    AVFrame *frame = m_decode->receive();
+    if(!frame)
+    {
+        vMux.unlock();
+        return false;
+    }
+    // 到达位置
+    if(m_decode->pts >= seekPts)
+    {
+        if(m_call)
+        {
+            m_call->repaint(frame);
+        }
+        vMux.unlock();
+        return true;
+    }
+    av_frame_free(&frame);
+    vMux.unlock();
+    return false;
+}

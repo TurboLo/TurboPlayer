@@ -31,6 +31,8 @@ public:
     // 空间需要调用者释放，释放对象为AVpacket对象空间和数据空间 av_packet_free
     virtual AVPacket *read();
 
+    virtual AVPacket *readVideo();
+
     virtual bool isAudio(AVPacket *pkt);
     // 获取视频参数,返回空间需要清理
     virtual AVCodecParameters  *copyVPara();
@@ -50,15 +52,12 @@ public:
     long long totalMs = 0;
     int width;
     int height;
-    int videoStream = 0;
-    int audioStream = 1;
 private:
     std::mutex mux;
-
     AVFormatContext *m_ic{nullptr};
-
-
     char *m_bTcp{};
+    int videoStream = 0;
+    int audioStream = 1;
 };
 
 

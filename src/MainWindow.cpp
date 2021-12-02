@@ -63,7 +63,7 @@ void MainWindow::playOrPause()
 
 void MainWindow::openFile()
 {
-    QString name = QFileDialog::getOpenFileName(this,tr("打开文件"),"./","*.mp4");
+    QString name = QFileDialog::getOpenFileName(this,tr("打开文件"),"./");
     if(name.isEmpty())
     {
         return;

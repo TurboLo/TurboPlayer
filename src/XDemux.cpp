@@ -68,14 +68,12 @@ bool XDemux::open(const char *url)
     width = as->codecpar->width;
     height = as->codecpar->height;
 
-
     /*std::cout << "=======================================================" << std::endl;
     std::cout << videoStream << "视频信息" << std::endl;
     std::cout << "codec_id = " << as->codecpar->codec_id << std::endl;
     std::cout << "format = " << as->codecpar->format << std::endl;
     std::cout << "width=" << as->codecpar->width << std::endl;
     std::cout << "height=" << as->codecpar->height << std::endl;*/
-
     //帧率 fps 分数转换
     /*std::cout << "video fps = " << r2d(as->avg_frame_rate) << std::endl;
     std::cout << "=======================================================" << std::endl;
@@ -86,7 +84,12 @@ bool XDemux::open(const char *url)
     m_channels = as->codecpar->channels;
     m_sampleRate = as->codecpar->sample_rate;
     m_sampleSize = as->codecpar->format * as->codecpar->channels;
-
+    /*std::cout << "=======================================================" << std::endl;
+    std::cout << audioStream << "音频信息" << std::endl;
+    std::cout << "codec_id = " << as->codecpar->codec_id << std::endl;
+    std::cout << "format = " << as->codecpar->format << std::endl;
+    std::cout << "m_sampleRate=" << as->codecpar->sample_rate << std::endl;
+    std::cout << "channels=" << as->codecpar->channels << std::endl;*/
     //1024 * 2 * 2 = 4096  fps = sample_rate/frame_size
     mux.unlock();
     return true;
@@ -195,4 +198,20 @@ bool XDemux::isAudio(AVPacket *pkt)
     if(!pkt || pkt->size<=0 ||!pkt->data) return false;
     if(pkt->stream_index == videoStream) return false;
     return true;
+}
+
+AVPacket *XDemux::readVideo()
+{
+    AVPacket *pkt = av_packet_alloc();
+    for(int i = 0 ; i < 20 ;i++)
+    {
+        pkt = read();
+        if(pkt->stream_index == videoStream)
+        {
+            break;
+        }
+        av_packet_free(&pkt);
+        continue;
+    }
+    return pkt;
 }

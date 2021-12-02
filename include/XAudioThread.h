@@ -27,6 +27,7 @@ public:
     long long pts = 0;
     virtual bool open(AVCodecParameters *para);
     virtual void close();
+    virtual void clear();
     void run() override;
     XAudioThread();
     virtual ~XAudioThread();
@@ -37,7 +38,7 @@ protected:
 private:
     std::mutex aMux;
     XResample *m_resample{nullptr};
-    bool m_isPause;
+    bool m_isPause{false};
 
 };
 

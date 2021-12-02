@@ -50,13 +50,14 @@ public:
     long long totalMs = 0;
     int width;
     int height;
+    int videoStream = 0;
+    int audioStream = 1;
 private:
     std::mutex mux;
 
     AVFormatContext *m_ic{nullptr};
 
-    int videoStream = 0;
-    int audioStream = 1;
+
     char *m_bTcp{};
 };
 

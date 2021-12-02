@@ -105,3 +105,11 @@ void XAudioThread::setPause(bool pause)
     m_isPause = pause;
     XAudioPlay::instance().setPause(pause);
 }
+
+void XAudioThread::clear()
+{
+    XDecodeThread::clear();
+    aMux.lock();
+    XAudioPlay::instance().clear();
+    aMux.unlock();
+}

@@ -25,6 +25,7 @@ public:
     // 打开音频播放
     virtual bool open() = 0;
     virtual void close() = 0;
+    virtual void clear() = 0;
     virtual bool write(const unsigned char *data , int dataSize) = 0;
     virtual int getFree() = 0;
     virtual long long getNoPlayMs() = 0;

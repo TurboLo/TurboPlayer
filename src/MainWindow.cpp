@@ -14,6 +14,8 @@ MainWindow::MainWindow(QWidget *parent) :
     m_xdt->start();
     connect(ui.actionOpen,&QAction::triggered,this,&MainWindow::openFile);
     connect(ui.actionPause,&QAction::triggered,this,&MainWindow::playOrPause);
+    connect(ui.videoProgressSlider,&QSlider::sliderPressed,this,&MainWindow::sliderPressed);
+    connect(ui.videoProgressSlider,&QSlider::sliderReleased,this,&MainWindow::sliderReleased);
     startTimer(40);
 }
 
@@ -22,6 +24,19 @@ MainWindow::~MainWindow()
     m_xdt->close();
     delete m_xdt;
     m_xdt= nullptr;
+}
+
+void MainWindow::sliderPressed()
+{
+    m_isSliderPress = true;
+}
+
+void MainWindow::sliderReleased()
+{
+    m_isSliderPress = false;
+    double pos = 0.0;
+    pos = (double)ui.videoProgressSlider->value() /(double)ui.videoProgressSlider->maximum();
+    m_xdt->seek(pos);
 }
 
 void MainWindow::init(int w, int h)
@@ -64,6 +79,7 @@ void MainWindow::openFile()
 
 void MainWindow::timerEvent(QTimerEvent *e)
 {
+    if(m_isSliderPress) return;
     long long total = m_xdt->totalMs;
     if(total>0)
     {

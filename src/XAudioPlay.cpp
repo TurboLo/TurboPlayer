@@ -45,6 +45,15 @@ public:
         }
         mux.unlock();
     }
+    virtual void clear()
+    {
+        mux.lock();
+        if(m_io)
+        {
+            m_io->reset();
+        }
+        mux.unlock();
+    }
     virtual int getFree()
     {
         mux.lock();

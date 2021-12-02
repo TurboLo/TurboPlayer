@@ -124,3 +124,55 @@ void XDemuxThread::setPause(bool pause)
     if(m_vt) m_vt->setPause(pause);
     mux.unlock();
 }
+
+void XDemuxThread::seek(double pos)
+{
+    clear();
+    // 暂停
+    mux.lock();
+    bool status = m_isPause;
+    mux.unlock();
+    setPause(true);
+    mux.lock();
+    if(m_demux)
+    {
+        m_demux->seek(pos);
+    }
+    long long seekPos = pos*m_demux->totalMs;
+    while(!isExit)
+    {
+        AVPacket *pkt = m_demux->read();
+        if(!pkt) continue;
+        if(pkt->stream_index == m_demux->audioStream)
+        {
+            av_packet_free(&pkt);
+            continue;
+        }
+        bool re = m_vt->m_decode->send(pkt);
+        if(!re) break;
+        AVFrame *frame = m_vt->m_decode->receive();
+        if(!frame) continue;
+        // 到达位置
+        if(frame->pts >=seekPos)
+        {
+            m_pts = frame->pts;
+            m_vt->m_call->repaint(frame);
+            break;
+        }
+        av_frame_free(&frame);
+    }
+    mux.unlock();
+    setPause(status);
+}
+
+void XDemuxThread::clear()
+{
+    mux.lock();
+    if(m_demux)
+    {
+        m_demux->clear();
+    }
+    if(m_vt) m_vt->clear();
+    if(m_at) m_at->clear();
+    mux.unlock();
+}

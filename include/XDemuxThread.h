@@ -20,14 +20,16 @@
 #include "XDemux.h"
 #include "XVideoThread.h"
 #include "XAudioThread.h"
-
+#include "FFMPegLib.h"
 class XDemuxThread : public QThread
 {
 public:
     virtual bool open(const char *url,IVideoCall *call);
     virtual void start();
     virtual void close();
+    virtual void clear();
     virtual void setPause(bool pause);
+    virtual void seek(double pos);
     void run() override;
     XDemuxThread();
     virtual ~XDemuxThread() override;

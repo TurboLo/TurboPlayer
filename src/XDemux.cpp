@@ -86,13 +86,6 @@ bool XDemux::open(const char *url)
     m_channels = as->codecpar->channels;
     m_sampleRate = as->codecpar->sample_rate;
     m_sampleSize = as->codecpar->format * as->codecpar->channels;
-    /*std::cout << "codec_id = " << as->codecpar->codec_id << std::endl;
-    std::cout << "format = " << as->codecpar->format << std::endl;
-    std::cout << "sample_rate = " << as->codecpar->sample_rate << std::endl;
-    //AVSampleFormat;
-    std::cout << "channels = " << as->codecpar->channels << std::endl;
-    //一帧数据？？ 单通道样本数
-    std::cout << "frame_size = " << as->codecpar->frame_size << std::endl;*/
 
     //1024 * 2 * 2 = 4096  fps = sample_rate/frame_size
     mux.unlock();

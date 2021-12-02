@@ -24,6 +24,8 @@ protected:
     void timerEvent(QTimerEvent *e) override;
     void resizeEvent(QResizeEvent *e) override;
     void mouseDoubleClickEvent(QMouseEvent *e) override;
+    void sliderPressed();
+    void sliderReleased();
 
 private slots:
     void openFile();
@@ -32,6 +34,7 @@ private slots:
 private:
     Ui::MainWindow ui;
     XDemuxThread *m_xdt{nullptr};
+    bool m_isSliderPress{false};
 
 };
 
